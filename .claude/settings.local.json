@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"F:/Projects/personal/dao-log\" status)"
+    ]
+  }
+}

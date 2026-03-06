@@ -1,0 +1,36 @@
+---
+import Base from '../../layouts/Base.astro'
+import { getPosts, getPost, formatDate } from '../../lib/api'
+import { marked } from 'marked'
+
+export async function getStaticPaths() {
+  const posts = await getPosts()
+  return posts.map(post => ({
+    params: { slug: post.slug }
+  }))
+}
+
+const { slug } = Astro.params
+const post = await getPost(slug)
+
+if (!post) {
+  return Astro.redirect('/404')
+}
+
+const html = marked(post.content || '')
+---
+
+<Base title={post.title} description={post.excerpt}>
+  <article>
+    <header class="post-header">
+      <div class="post-meta">
+        <span>{formatDate(post.published_at)}</span>
+        {post.tags.map(tag => (
+          <span class="post-tag">{tag}</span>
+        ))}
+      </div>
+      <h1>{post.title}</h1>
+    </header>
+    <div class="post-content" set:html={html} />
+  </article>
+</Base>
