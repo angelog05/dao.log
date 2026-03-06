@@ -21,7 +21,7 @@ const posts = await getPosts()
           ))}
         </div>
         <div class="post-title">
-          <a href={`${import.meta.env.BASE_URL}posts/${post.slug}`}>{post.title}</a>
+          <a href={`${import.meta.env.BASE_URL}/posts/${post.slug}`}>{post.title}</a>
         </div>
         {post.excerpt && (
           <p class="post-excerpt">{post.excerpt}</p>

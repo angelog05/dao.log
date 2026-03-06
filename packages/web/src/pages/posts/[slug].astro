@@ -17,7 +17,9 @@ if (!post) {
   return Astro.redirect('/404')
 }
 
-const html = marked(post.content || '')
+// Strip leading h1 if it matches the post title (avoids duplication)
+const rawContent = (post.content || '').replace(/^#\s+.+\n?/, '')
+const html = marked(rawContent)
 ---
 
 <Base title={post.title} description={post.excerpt}>
