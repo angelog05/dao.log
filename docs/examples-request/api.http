@@ -1,0 +1,203 @@
+### dao.log API — Examples
+### Base URL y variables de entorno
+### Usar con REST Client (VS Code) o IntelliJ HTTP Client
+
+@baseUrl = http://localhost:3001
+@apiSecret = dev-secret-123
+@contentType = application/json
+
+
+# ─────────────────────────────────────────
+# HEALTH
+# ─────────────────────────────────────────
+
+### Verificar que la API está corriendo
+GET {{baseUrl}}/health
+
+
+# ─────────────────────────────────────────
+# POSTS — Lectura pública (sin auth)
+# ─────────────────────────────────────────
+
+### Listar todos los posts publicados
+# Devuelve: id, title, slug, excerpt, tags, published_at, created_at
+# NO incluye el campo "content" para mantener la respuesta ligera
+GET {{baseUrl}}/api/posts
+
+
+### Obtener un post por slug (con content completo)
+GET {{baseUrl}}/api/posts/ten-hours-with-openclaw
+
+
+### Intentar obtener un post que no existe → 404
+GET {{baseUrl}}/api/posts/este-post-no-existe
+
+
+# ─────────────────────────────────────────
+# POSTS — Escritura (requiere auth)
+# ─────────────────────────────────────────
+
+### Crear un nuevo post (mínimo requerido: title + content)
+POST {{baseUrl}}/api/posts
+Content-Type: {{contentType}}
+Authorization: Bearer {{apiSecret}}
+
+{
+  "title": "Mi primer post de prueba",
+  "content": "# Mi primer post de prueba\n\nEste es el contenido del post en **markdown**.\n\n## Sección 1\n\nAlgo de contenido aquí.",
+  "excerpt": "Un post de prueba para verificar que la API funciona.",
+  "tags": ["test", "draft"],
+  "date": "2026-03-05",
+  "published": true
+}
+
+
+### Crear un post completo con todos los campos
+POST {{baseUrl}}/api/posts
+Content-Type: {{contentType}}
+Authorization: Bearer {{apiSecret}}
+
+{
+  "title": "Una Semana con Claude Code",
+  "content": "# Una Semana con Claude Code\n\nLlevo una semana usando Claude Code como herramienta principal de desarrollo.\n\n## Lo que cambió\n\nAntes tardaba 3 horas en hacer scaffold de un proyecto. Ahora tardo 20 minutos.\n\n## Lo que no cambió\n\nTodavía tengo que pensar. Eso no lo va a resolver ninguna herramienta.\n\n## Conclusión\n\nVale la pena. Con reservas.",
+  "excerpt": "Una semana usando Claude Code como herramienta principal. Lo que funcionó, lo que no, y lo que me sorprendió.",
+  "tags": ["claude", "devtools", "workflow"],
+  "date": "2026-03-04",
+  "published": true
+}
+
+
+### Crear un post como borrador (published: false)
+POST {{baseUrl}}/api/posts
+Content-Type: {{contentType}}
+Authorization: Bearer {{apiSecret}}
+
+{
+  "title": "Draft: Ideas para el próximo post",
+  "content": "# Ideas\n\n- Hablar sobre el workflow de publicación\n- Comparar Supabase vs PlanetScale\n- Primer mes con el blog",
+  "excerpt": "Notas internas, no publicado aún.",
+  "tags": ["draft", "ideas"],
+  "date": "2026-03-05",
+  "published": false
+}
+
+
+### Intentar crear un post sin auth → 401 Unauthorized
+POST {{baseUrl}}/api/posts
+Content-Type: {{contentType}}
+
+{
+  "title": "Este post no se creará",
+  "content": "Falta el header de autorización."
+}
+
+
+### Intentar crear un post sin title → 400 Bad Request
+POST {{baseUrl}}/api/posts
+Content-Type: {{contentType}}
+Authorization: Bearer {{apiSecret}}
+
+{
+  "content": "Falta el campo title."
+}
+
+
+# ─────────────────────────────────────────
+# POSTS — Actualizar
+# ─────────────────────────────────────────
+
+### Actualizar el excerpt de un post
+PATCH {{baseUrl}}/api/posts/ten-hours-with-openclaw
+Content-Type: {{contentType}}
+Authorization: Bearer {{apiSecret}}
+
+{
+  "excerpt": "Excerpt actualizado: pasé diez horas construyendo una capa de seguridad para OpenClaw."
+}
+
+
+### Actualizar tags de un post
+PATCH {{baseUrl}}/api/posts/ten-hours-with-openclaw
+Content-Type: {{contentType}}
+Authorization: Bearer {{apiSecret}}
+
+{
+  "tags": ["openclaw", "agents", "security", "prompt-injection"]
+}
+
+
+### Despublicar un post (published: false)
+PATCH {{baseUrl}}/api/posts/ten-hours-with-openclaw
+Content-Type: {{contentType}}
+Authorization: Bearer {{apiSecret}}
+
+{
+  "published": false
+}
+
+
+### Volver a publicar un post
+PATCH {{baseUrl}}/api/posts/ten-hours-with-openclaw
+Content-Type: {{contentType}}
+Authorization: Bearer {{apiSecret}}
+
+{
+  "published": true
+}
+
+
+### Actualizar el contenido completo de un post
+PATCH {{baseUrl}}/api/posts/ten-hours-with-openclaw
+Content-Type: {{contentType}}
+Authorization: Bearer {{apiSecret}}
+
+{
+  "content": "# Ten Hours with OpenClaw\n\nContenido actualizado aquí.\n\n## Sección nueva\n\nNuevo contenido añadido en la revisión."
+}
+
+
+# ─────────────────────────────────────────
+# POSTS — Eliminar
+# ─────────────────────────────────────────
+
+### Eliminar un post por slug (¡cuidado, es irreversible!)
+# Descomenta la siguiente línea para ejecutar:
+# DELETE {{baseUrl}}/api/posts/mi-primer-post-de-prueba
+# Content-Type: {{contentType}}
+# Authorization: Bearer {{apiSecret}}
+
+
+# ─────────────────────────────────────────
+# FLUJO COMPLETO — Crear → Leer → Actualizar → Verificar
+# ─────────────────────────────────────────
+
+### 1. Crear el post
+POST {{baseUrl}}/api/posts
+Content-Type: {{contentType}}
+Authorization: Bearer {{apiSecret}}
+
+{
+  "title": "Flujo de prueba completo",
+  "content": "# Flujo de prueba\n\nEste post es para probar el ciclo completo de la API.",
+  "excerpt": "Test del flujo completo: create → read → update.",
+  "tags": ["test"],
+  "date": "2026-03-05"
+}
+
+### 2. Leer el post recién creado
+GET {{baseUrl}}/api/posts/flujo-de-prueba-completo
+
+### 3. Actualizar el excerpt
+PATCH {{baseUrl}}/api/posts/flujo-de-prueba-completo
+Content-Type: {{contentType}}
+Authorization: Bearer {{apiSecret}}
+
+{
+  "excerpt": "Excerpt actualizado tras el ciclo de prueba."
+}
+
+### 4. Verificar la actualización
+GET {{baseUrl}}/api/posts/flujo-de-prueba-completo
+
+### 5. Verificar que aparece en el listado
+GET {{baseUrl}}/api/posts
