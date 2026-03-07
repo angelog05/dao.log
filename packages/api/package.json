@@ -2,10 +2,11 @@
   "name": "@dao-log/api",
   "version": "1.0.0",
   "type": "module",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "dev": "node --watch src/index.js",
-    "start": "node src/index.js"
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
@@ -15,5 +16,13 @@
     "lowdb": "^7.0.1",
     "morgan": "^1.10.1",
     "slug": "^9.1.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^25.3.5",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }

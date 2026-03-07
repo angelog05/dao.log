@@ -1,0 +1,46 @@
+import express, { Request, Response, NextFunction } from 'express'
+import cors from 'cors'
+import morgan from 'morgan'
+import 'dotenv/config'
+import postsRouter from './routes/posts.js'
+import logger from './lib/logger.js'
+
+const app = express()
+const PORT = Number(process.env.PORT) || 3001
+
+app.use(cors())
+app.use(express.json({ limit: '1mb' }))
+app.use(morgan('[:date[iso]] :method :url :status :res[content-length]b - :response-time ms'))
+
+// Health check
+app.get('/health', (_req: Request, res: Response) => {
+  res.json({ status: 'ok', service: 'dao-log-api' })
+})
+
+// Routes
+app.use('/api/posts', postsRouter)
+
+// 404
+app.use((_req: Request, res: Response) => {
+  res.status(404).json({ error: 'Not found' })
+})
+
+// Error handler
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  logger.error(`Unhandled error: ${err.message ?? err}`)
+  res.status(500).json({ error: 'Internal server error' })
+})
+
+const server = app.listen(PORT, () => {
+  logger.info(`dao-log API running on http://localhost:${PORT}`)
+  logger.info(`DB driver: ${process.env.DB_DRIVER ?? 'sqlite'}`)
+})
+
+server.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EADDRINUSE') {
+    logger.error(`Port ${PORT} is already in use. Kill the process with: taskkill /IM node.exe /F`)
+  } else {
+    logger.error(`Server error: ${err.message}`)
+  }
+  process.exit(1)
+})
