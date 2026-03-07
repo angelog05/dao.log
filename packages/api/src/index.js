@@ -31,7 +31,16 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Internal server error" });
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   logger.info(`dao-log API running on http://localhost:${PORT}`);
   logger.info(`DB driver: ${process.env.DB_DRIVER || 'sqlite'}`);
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    logger.error(`Port ${PORT} is already in use. Kill the process with: taskkill /IM node.exe /F`);
+  } else {
+    logger.error(`Server error: ${err.message}`);
+  }
+  process.exit(1);
 });
