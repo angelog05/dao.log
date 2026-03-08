@@ -24,15 +24,13 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: packages/web/package-lock.json
+          cache-dependency-path: package-lock.json
 
-      - name: Install web dependencies
+      - name: Install dependencies
         run: npm install
-        working-directory: packages/web
 
       - name: Build Astro site
-        run: npm run build
-        working-directory: packages/web
+        run: npm run build:web
         env:
           PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}
 
