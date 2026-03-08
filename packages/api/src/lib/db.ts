@@ -1,8 +1,9 @@
 import 'dotenv/config'
+import type { DbDriver } from '../types.js'
 
-const driver = process.env.DB_DRIVER || 'sqlite'
+const driver = process.env.DB_DRIVER ?? 'sqlite'
 
-let db
+let db: DbDriver
 
 if (driver === 'supabase') {
   const { default: supabaseDb } = await import('./drivers/supabase.js')
