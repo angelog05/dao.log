@@ -18,7 +18,7 @@ if (!post) {
 }
 
 // Strip leading h1 if it matches the post title (avoids duplication)
-const rawContent = (post.content || '').replace(/^#\s+.+\n?/, '')
+const rawContent = post.content.replace(/^#\s+.+\n?/, '')
 const html = marked(rawContent)
 ---
 
