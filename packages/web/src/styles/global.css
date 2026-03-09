@@ -1,0 +1,84 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ── Dark mode variant (triggered by .dark class on <html>) ─────── */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── CSS variables — light theme (default) ──────────────────────── */
+:root {
+  --bg:      #f7f5f0;
+  --surface: #ede9e2;
+  --border:  #d8d4cc;
+  --text:    #28272a;
+  --muted:   #9a9080;
+  --accent:  #a0713a;
+  --accent2: #3d6e9a;
+}
+
+/* ── CSS variables — dark theme ─────────────────────────────────── */
+.dark {
+  --bg:      #0d0d0d;
+  --surface: #141414;
+  --border:  #222;
+  --text:    #c8c8c0;
+  --muted:   #555;
+  --accent:  #c8a96e;
+  --accent2: #6e9ecb;
+}
+
+/* ── Tailwind design tokens (reference runtime CSS variables) ────── */
+@theme inline {
+  --color-bg:      var(--bg);
+  --color-surface: var(--surface);
+  --color-border:  var(--border);
+  --color-text:    var(--text);
+  --color-muted:   var(--muted);
+  --color-accent:  var(--accent);
+  --color-accent2: var(--accent2);
+
+  --font-mono:  'JetBrains Mono', monospace;
+  --font-serif: 'Noto Serif', Georgia, serif;
+}
+
+/* ── Base styles ─────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Serif', Georgia, serif;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--accent); color: var(--bg); }
+
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── Component classes (used in JS innerHTML template literals) ──── */
+.post-item {
+  @apply py-8 border-b border-border last:border-0;
+}
+
+.post-meta {
+  @apply flex items-center gap-4 font-mono text-[0.72rem] text-muted tracking-widest mb-2;
+}
+
+.post-tag {
+  @apply border border-accent2 text-accent2 px-1.5 text-[0.65rem] tracking-widest uppercase rounded-sm;
+}
+
+.post-title {
+  @apply font-serif text-[1.3rem] font-bold leading-snug mb-2;
+}
+
+.post-title a {
+  @apply text-text no-underline transition-colors hover:text-accent;
+}
+
+.post-excerpt {
+  @apply text-muted text-[0.92rem] leading-relaxed;
+}

@@ -3,7 +3,11 @@ import Base from '../layouts/Base.astro'
 ---
 
 <Base title="About">
-  <div class="post-content" style="padding-top: 2.5rem;">
+  <div class="py-12 prose dark:prose-invert max-w-none
+              prose-headings:font-serif prose-headings:text-text
+              prose-a:text-accent2 prose-strong:text-text
+              prose-hr:border-border">
+
     <h2>About dao.log</h2>
     <p>
       This is where I document how I use AI in my work and daily life.
@@ -19,6 +23,7 @@ import Base from '../layouts/Base.astro'
       These are my field notes.
     </p>
     <hr />
-    <p style="font-family: var(--mono); font-size: 0.8rem; color: var(--muted);">— Bragui</p>
+    <p class="font-mono text-[0.8rem] text-muted not-prose">— Bragui</p>
+
   </div>
 </Base>
