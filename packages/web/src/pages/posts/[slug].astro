@@ -1,38 +1,8 @@
 ---
-import Base from '../../layouts/Base.astro'
-import { getPosts, getPost, formatDate } from '../../lib/api'
-import { marked } from 'marked'
-
-export async function getStaticPaths() {
-  const posts = await getPosts()
-  return posts.map(post => ({
-    params: { slug: post.slug }
-  }))
+// Post pages are now handled client-side via src/pages/404.astro
+// Empty getStaticPaths() → no static HTML generated at build time
+// All /posts/{slug} requests fall through to 404.html on GitHub Pages
+export function getStaticPaths() {
+  return []
 }
-
-const { slug } = Astro.params
-const post = await getPost(slug)
-
-if (!post) {
-  return Astro.redirect('/404')
-}
-
-// Strip leading h1 if it matches the post title (avoids duplication)
-const rawContent = post.content.replace(/^#\s+.+\n?/, '')
-const html = marked(rawContent)
 ---
-
-<Base title={post.title} description={post.excerpt}>
-  <article>
-    <header class="post-header">
-      <div class="post-meta">
-        <span>{formatDate(post.published_at)}</span>
-        {post.tags.map(tag => (
-          <span class="post-tag">{tag}</span>
-        ))}
-      </div>
-      <h1>{post.title}</h1>
-    </header>
-    <div class="post-content" set:html={html} />
-  </article>
-</Base>

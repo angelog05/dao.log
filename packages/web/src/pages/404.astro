@@ -1,0 +1,88 @@
+---
+import Base from '../layouts/Base.astro'
+---
+
+<Base title="404">
+  <div id="loading" style="padding: 3rem 0; font-family: var(--mono); color: var(--muted); font-size: 0.85rem;">
+    loading...
+  </div>
+
+  <article id="post-view" style="display: none">
+    <header class="post-header">
+      <div class="post-meta" id="post-meta"></div>
+      <h1 id="post-title"></h1>
+    </header>
+    <div class="post-content" id="post-content"></div>
+  </article>
+
+  <div id="not-found" style="display: none; padding: 3rem 0;">
+    <p style="font-family: var(--mono); font-size: 0.85rem; color: var(--muted);">
+      404 — page not found.
+    </p>
+    <p style="margin-top: 1rem; font-family: var(--mono); font-size: 0.8rem;">
+      <a id="home-link" href="/" style="color: var(--accent2)">← home</a>
+    </p>
+  </div>
+</Base>
+
+<script>
+  import { marked } from 'marked'
+
+  const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001'
+  const BASE_URL = import.meta.env.BASE_URL
+
+  function formatDate(dateStr: string): string {
+    return new Date(dateStr).toISOString().split('T')[0]
+  }
+
+  async function init() {
+    const loading  = document.getElementById('loading')!
+    const postView = document.getElementById('post-view')!
+    const notFound = document.getElementById('not-found')!
+    const homeLink = document.getElementById('home-link') as HTMLAnchorElement
+
+    homeLink.href = BASE_URL || '/'
+
+    const path  = window.location.pathname
+    const match = path.match(/\/posts\/([^/]+)\/?$/)
+
+    if (!match) {
+      loading.style.display = 'none'
+      notFound.style.display = 'block'
+      return
+    }
+
+    const slug = match[1]
+
+    try {
+      const res = await fetch(`${API_URL}/api/posts/${slug}`)
+      if (!res.ok) throw new Error('not found')
+      const post = await res.json()
+
+      // Update page title dynamically
+      document.title = `${post.title} — dao.log`
+
+      // Render meta
+      document.getElementById('post-meta')!.innerHTML = `
+        <span>${formatDate(post.published_at)}</span>
+        ${post.tags.map((tag: string) => `<span class="post-tag">${tag}</span>`).join('')}
+      `
+
+      // Render title
+      document.getElementById('post-title')!.textContent = post.title
+
+      // Strip leading h1 if it duplicates the title, then parse markdown
+      const rawContent = post.content.replace(/^#\s+.+\n?/, '')
+      document.getElementById('post-content')!.innerHTML = marked(rawContent) as string
+
+      loading.style.display  = 'none'
+      postView.style.display = 'block'
+
+    } catch {
+      loading.style.display  = 'none'
+      notFound.style.display = 'block'
+    }
+  }
+
+  init()
+</script>
