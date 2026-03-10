@@ -388,7 +388,7 @@ curl -X POST http://localhost:3001/api/posts ^
 ## Historial de commits relevantes
 
 ```
-(pending)  feat(web): add avatar + dropdown menu with shadcn/ui (React)
+be3e800  feat(web): add avatar + dropdown menu with shadcn/ui (React)
 389b4ee  fix(web): cleaner light theme + proper code block styling
 372339b  feat(web): migrate to Tailwind CSS v4 + day/night theme toggle
 ed346e5  feat(web): switch post list and post pages to client-side rendering
