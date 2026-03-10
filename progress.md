@@ -1,6 +1,6 @@
 # progress.md — dao.log
 
-> Estado del proyecto al 2026-03-09. Registro detallado de todo lo construido.
+> Estado del proyecto al 2026-03-09. Registro detallado de todo lo construido. Última actualización: avatar + shadcn/ui dropdown.
 
 ---
 
@@ -29,7 +29,7 @@ API  →  Node.js + Express + TypeScript  (Railway)
         ↓
 DB   →  Supabase (PostgreSQL)
         ↓
-Web  →  Astro 5 + Tailwind CSS v4  (GitHub Pages)
+Web  →  Astro 5 + Tailwind CSS v4 + React (shadcn/ui)  (GitHub Pages)
 ```
 
 ### Por qué este stack
@@ -38,6 +38,7 @@ Web  →  Astro 5 + Tailwind CSS v4  (GitHub Pages)
 - **Supabase** — PostgreSQL gestionado con free tier generoso (500MB), sin tarjeta de crédito
 - **Astro** — cero JS por defecto, build estático puro, soporte nativo de TypeScript
 - **Tailwind CSS v4** — CSS-first config, tokens via CSS variables, mejor integración con temas dinámicos
+- **React + shadcn/ui** — para componentes interactivos (DropdownMenu, Avatar) vía `@astrojs/react` y `client:load`
 - **GitHub Pages** — hosting gratuito, CI/CD integrado vía GitHub Actions
 - **Monorepo** — API y web en el mismo repo con npm workspaces
 
@@ -74,15 +75,21 @@ dao-log/
 │   │   ├── railway.toml            ← Config de deploy: buildCommand + startCommand
 │   │   ├── tsconfig.json           ← NodeNext + strict
 │   │   └── package.json
-│   └── web/                        ← Blog frontend (Astro 5 + Tailwind CSS v4)
+│   └── web/                        ← Blog frontend (Astro 5 + Tailwind CSS v4 + React)
 │       ├── src/
 │       │   ├── env.d.ts            ← Tipos para variables de entorno
 │       │   ├── styles/
-│       │   │   └── global.css      ← Tailwind v4: tokens, CSS vars, componentes
+│       │   │   └── global.css      ← Tailwind v4: tokens, CSS vars, shadcn aliases
 │       │   ├── layouts/
-│       │   │   └── Base.astro      ← Layout principal + toggle día/noche
+│       │   │   └── Base.astro      ← Layout principal + toggle + avatar menu
 │       │   ├── lib/
-│       │   │   └── api.ts          ← Cliente HTTP (PostSummary[], Post)
+│       │   │   ├── api.ts          ← Cliente HTTP (PostSummary[], Post)
+│       │   │   └── utils.ts        ← cn() helper para shadcn
+│       │   ├── components/
+│       │   │   ├── UserMenu.tsx    ← Avatar + DropdownMenu (React + shadcn)
+│       │   │   └── ui/
+│       │   │       ├── avatar.tsx       ← shadcn Avatar component
+│       │   │       └── dropdown-menu.tsx ← shadcn DropdownMenu component
 │       │   └── pages/
 │       │       ├── index.astro     ← Home: lista de posts (fetch client-side)
 │       │       ├── about.astro     ← Página about
@@ -91,7 +98,8 @@ dao-log/
 │       │           └── [slug].astro ← getStaticPaths() vacío (no genera páginas)
 │       ├── public/
 │       │   └── favicon.svg
-│       ├── astro.config.mjs        ← site, base, output: static, @tailwindcss/vite
+│       ├── astro.config.mjs        ← site, base, output: static, react(), @tailwindcss/vite
+│       ├── components.json         ← Configuración de shadcn/ui
 │       └── package.json
 ├── .gitignore
 ├── package.json                    ← Workspace root (npm workspaces)
@@ -256,6 +264,25 @@ Estilos de `pre`, `code`, `blockquote` y `a` sobreescritos en `global.css` con C
 - Botón luna/sol (SVG inline) en el header, arriba a la derecha
 - Script `is:inline` en `<head>` aplica el tema antes del primer render (sin flash)
 
+### shadcn/ui — Avatar + DropdownMenu
+
+- **React** integrado en Astro vía `@astrojs/react`, con `client:load` para hidratación client-side
+- **Avatar** circular con iniciales "B" — fondo `--accent`, texto `--bg` vía `style` inline
+- **DropdownMenu** (Radix UI headless) — abre/cierra automáticamente, soporta keyboard (Escape, Tab)
+- **Opción "themes"** → placeholder deshabilitado, listo para implementar en el futuro
+- **CSS vars de shadcn** (`--background`, `--popover`, `--muted-foreground`, etc.) → aliases que apuntan a nuestras variables existentes → tema automático sin duplicar valores
+
+```
+packages/web/
+├── components.json          ← shadcn config (style: default, no tailwind.config)
+├── src/lib/utils.ts         ← cn() helper (clsx + tailwind-merge)
+├── src/components/
+│   ├── UserMenu.tsx         ← Componente React: Avatar + DropdownMenu
+│   └── ui/
+│       ├── avatar.tsx       ← shadcn Avatar (generado por CLI)
+│       └── dropdown-menu.tsx ← shadcn DropdownMenu (generado por CLI)
+```
+
 ---
 
 ## Variables de entorno
@@ -361,6 +388,7 @@ curl -X POST http://localhost:3001/api/posts ^
 ## Historial de commits relevantes
 
 ```
+(pending)  feat(web): add avatar + dropdown menu with shadcn/ui (React)
 389b4ee  fix(web): cleaner light theme + proper code block styling
 372339b  feat(web): migrate to Tailwind CSS v4 + day/night theme toggle
 ed346e5  feat(web): switch post list and post pages to client-side rendering
@@ -391,4 +419,4 @@ c578f5e  feat(api): add Morgan HTTP logging and business event logger
 
 ---
 
-*Última actualización: 2026-03-09*
+*Última actualización: 2026-03-09 — avatar + shadcn/ui dropdown*

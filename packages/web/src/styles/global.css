@@ -13,6 +13,14 @@
   --muted:   #9a9080;
   --accent:  #a0713a;
   --accent2: #3d6e9a;
+
+  /* shadcn compat aliases — point to our vars, theme-aware automatically */
+  --background:         var(--bg);
+  --foreground:         var(--text);
+  --popover:            var(--surface);
+  --popover-foreground: var(--text);
+  --muted-foreground:   var(--muted);
+  --accent-foreground:  var(--bg);
 }
 
 /* ── CSS variables — dark theme ─────────────────────────────────── */
@@ -24,6 +32,14 @@
   --muted:   #555;
   --accent:  #c8a96e;
   --accent2: #6e9ecb;
+
+  /* shadcn compat aliases */
+  --background:         var(--bg);
+  --foreground:         var(--text);
+  --popover:            var(--surface);
+  --popover-foreground: var(--text);
+  --muted-foreground:   var(--muted);
+  --accent-foreground:  var(--bg);
 }
 
 /* ── Tailwind design tokens (reference runtime CSS variables) ────── */
@@ -35,6 +51,14 @@
   --color-muted:   var(--muted);
   --color-accent:  var(--accent);
   --color-accent2: var(--accent2);
+
+  /* shadcn Tailwind tokens — enables bg-popover, text-foreground, etc. */
+  --color-background:         var(--background);
+  --color-foreground:         var(--foreground);
+  --color-popover:            var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted-foreground:   var(--muted-foreground);
+  --color-accent-foreground:  var(--accent-foreground);
 
   --font-mono:  'JetBrains Mono', monospace;
   --font-serif: 'Noto Serif', Georgia, serif;
