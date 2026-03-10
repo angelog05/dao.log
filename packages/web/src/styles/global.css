@@ -6,9 +6,9 @@
 
 /* ── CSS variables — light theme (default) ──────────────────────── */
 :root {
-  --bg:      #f7f5f0;
-  --surface: #ede9e2;
-  --border:  #d8d4cc;
+  --bg:      #fafafa;
+  --surface: #f2f2f2;
+  --border:  #e4e4e0;
   --text:    #28272a;
   --muted:   #9a9080;
   --accent:  #a0713a;
@@ -81,4 +81,58 @@ body {
 
 .post-excerpt {
   @apply text-muted text-[0.92rem] leading-relaxed;
+}
+
+/* ── Prose (post content) overrides ─────────────────────────────── */
+/* Using CSS variables → both light and dark handled automatically   */
+
+.prose pre {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+  padding: 1.2rem 1.4rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.prose pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  font-weight: normal;
+}
+
+.prose :not(pre) > code {
+  background-color: var(--surface);
+  color: var(--accent);
+  border: 1px solid var(--border);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  font-size: 0.85em;
+  font-weight: normal;
+}
+
+.prose blockquote {
+  border-left: 3px solid var(--accent);
+  background-color: var(--surface);
+  color: var(--muted);
+  font-style: italic;
+  padding: 0.8rem 1.2rem;
+  margin: 1.5rem 0;
+}
+
+.prose a {
+  color: var(--accent2);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent2);
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.prose a:hover {
+  color: var(--text);
+  border-color: var(--muted);
 }
