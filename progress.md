@@ -1,6 +1,6 @@
 # progress.md — dao.log
 
-> Estado del proyecto al 2026-03-07. Registro detallado de todo lo construido.
+> Estado del proyecto al 2026-03-09. Registro detallado de todo lo construido.
 
 ---
 
@@ -13,33 +13,33 @@ El nombre viene de **道** (Dào) — el camino. No un destino, no un framework.
 
 **Autor:** Bragui
 **Repo:** https://github.com/angelog05/dao.log
-**URL (cuando esté desplegado):** https://angelog05.github.io/dao.log
+**Web:** https://angelog05.github.io/dao.log
+**API:** https://dao-logapi-production.up.railway.app
 
 ---
 
-## Stack elegido
+## Stack
 
 ```
 OpenClaw / CLI / cualquier cliente HTTP
         ↓
 POST /api/posts  ←  JSON con markdown en "content"
         ↓
-API  →  Node.js + Express + TypeScript
+API  →  Node.js + Express + TypeScript  (Railway)
         ↓
 DB   →  Supabase (PostgreSQL)
         ↓
-Web  →  Astro (static site generator + TypeScript)
-        ↓
-Host →  GitHub Pages (gratis)
+Web  →  Astro 5 + Tailwind CSS v4  (GitHub Pages)
 ```
 
 ### Por qué este stack
 
 - **Node + Express + TypeScript** — sin fricción, máximo control, tipos en toda la cadena
-- **Supabase** — PostgreSQL gestionado con free tier generoso (500MB), sin tarjeta de crédito, dashboard web incluido
-- **Astro** — cero JS por defecto, build estático puro, soporte nativo de TypeScript, mejor DX que Eleventy/Gatsby para blogs
+- **Supabase** — PostgreSQL gestionado con free tier generoso (500MB), sin tarjeta de crédito
+- **Astro** — cero JS por defecto, build estático puro, soporte nativo de TypeScript
+- **Tailwind CSS v4** — CSS-first config, tokens via CSS variables, mejor integración con temas dinámicos
 - **GitHub Pages** — hosting gratuito, CI/CD integrado vía GitHub Actions
-- **Monorepo** — API y web en el mismo repo con npm workspaces, un solo `git push` para deployar todo
+- **Monorepo** — API y web en el mismo repo con npm workspaces
 
 ---
 
@@ -49,61 +49,60 @@ Host →  GitHub Pages (gratis)
 dao-log/
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml          ← GitHub Actions: build + deploy a Pages
+│       └── deploy.yml              ← GitHub Actions: build + deploy a Pages
 ├── packages/
-│   ├── api/                    ← REST API (Node + Express + TypeScript)
+│   ├── api/                        ← REST API (Node + Express + TypeScript)
 │   │   ├── src/
-│   │   │   ├── index.ts        ← Entry point, Express server (puerto 3001)
-│   │   │   ├── types.ts        ← Interfaces compartidas (Post, DbDriver, DbResult…)
+│   │   │   ├── index.ts            ← Entry point, Express server (puerto 3001)
+│   │   │   ├── types.ts            ← Interfaces compartidas (Post, DbDriver, DbResult…)
 │   │   │   ├── routes/
-│   │   │   │   └── posts.ts    ← CRUD endpoints /api/posts
+│   │   │   │   └── posts.ts        ← CRUD endpoints /api/posts
 │   │   │   ├── lib/
-│   │   │   │   ├── db.ts       ← Abstracción de driver (sqlite | supabase)
-│   │   │   │   ├── auth.ts     ← Middleware Bearer token
-│   │   │   │   ├── logger.ts   ← Logger con timestamps ISO
-│   │   │   │   ├── supabase.ts ← Cliente Supabase singleton
+│   │   │   │   ├── db.ts           ← Abstracción de driver (sqlite | supabase)
+│   │   │   │   ├── auth.ts         ← Middleware Bearer token
+│   │   │   │   ├── logger.ts       ← Logger con timestamps ISO
+│   │   │   │   ├── supabase.ts     ← Cliente Supabase singleton
 │   │   │   │   └── drivers/
 │   │   │   │       ├── sqlite.ts   ← Driver dev local (lowdb JSON)
 │   │   │   │       └── supabase.ts ← Driver producción (Supabase)
 │   │   │   ├── db/
-│   │   │   │   ├── schema.sql      ← DDL para crear tabla posts en Supabase
-│   │   │   │   ├── test-connection.ts  ← Script para verificar conexión
-│   │   │   │   └── seed-post.ts    ← Script para poblar el primer post
-│   │   │   └── slug.d.ts       ← Declaración ambient para el paquete slug
-│   │   ├── dist/               ← Build compilado (gitignored)
-│   │   ├── tsconfig.json       ← NodeNext + strict
-│   │   ├── .env                ← Variables locales (no en git)
-│   │   ├── .env.example        ← Template de variables
+│   │   │   │   ├── schema.sql
+│   │   │   │   ├── test-connection.ts
+│   │   │   │   └── seed-post.ts
+│   │   │   └── slug.d.ts           ← Declaración ambient para el paquete slug
+│   │   ├── dist/                   ← Build compilado (gitignored)
+│   │   ├── railway.toml            ← Config de deploy: buildCommand + startCommand
+│   │   ├── tsconfig.json           ← NodeNext + strict
 │   │   └── package.json
-│   └── web/                    ← Blog frontend (Astro + TypeScript)
+│   └── web/                        ← Blog frontend (Astro 5 + Tailwind CSS v4)
 │       ├── src/
-│       │   ├── env.d.ts        ← Tipos para variables de entorno (PUBLIC_API_URL)
+│       │   ├── env.d.ts            ← Tipos para variables de entorno
+│       │   ├── styles/
+│       │   │   └── global.css      ← Tailwind v4: tokens, CSS vars, componentes
 │       │   ├── layouts/
-│       │   │   └── Base.astro  ← Layout principal con todo el CSS
+│       │   │   └── Base.astro      ← Layout principal + toggle día/noche
 │       │   ├── lib/
-│       │   │   └── api.ts      ← Cliente HTTP (getPosts→PostSummary[], getPost→Post)
+│       │   │   └── api.ts          ← Cliente HTTP (PostSummary[], Post)
 │       │   └── pages/
-│       │       ├── index.astro         ← Home: lista de posts
-│       │       ├── about.astro         ← Página about
+│       │       ├── index.astro     ← Home: lista de posts (fetch client-side)
+│       │       ├── about.astro     ← Página about
+│       │       ├── 404.astro       ← Catch-all: maneja /posts/{slug} client-side
 │       │       └── posts/
-│       │           └── [slug].astro    ← Página de post individual (dinámica)
+│       │           └── [slug].astro ← getStaticPaths() vacío (no genera páginas)
 │       ├── public/
 │       │   └── favicon.svg
-│       ├── tsconfig.json       ← Extiende astro/tsconfigs/strict
-│       ├── .env                ← PUBLIC_API_URL=http://localhost:3001
-│       ├── .env.example
-│       ├── astro.config.mjs    ← site, base, output: static
+│       ├── astro.config.mjs        ← site, base, output: static, @tailwindcss/vite
 │       └── package.json
 ├── .gitignore
-├── package.json                ← Workspace root (npm workspaces)
-├── README.md
-└── progress.md                 ← Este archivo
+├── package.json                    ← Workspace root (npm workspaces)
+└── progress.md                     ← Este archivo
 ```
 
 ---
 
-## API — Endpoints documentados
+## API — Endpoints
 
+Base URL prod: `https://dao-logapi-production.up.railway.app`
 Base URL local: `http://localhost:3001`
 
 | Método | Ruta | Auth | Descripción |
@@ -118,19 +117,6 @@ Base URL local: `http://localhost:3001`
 **Auth:** Header `Authorization: Bearer <API_SECRET>`
 **API_SECRET en dev:** `dev-secret-123`
 
-### Body para crear un post
-
-```json
-{
-  "title": "Título del post",
-  "content": "# Título\n\nContenido en markdown...",
-  "excerpt": "Descripción corta para el listado",
-  "tags": ["tag1", "tag2"],
-  "date": "2026-03-01",
-  "published": true
-}
-```
-
 ---
 
 ## TypeScript — Tipos compartidos (`api/src/types.ts`)
@@ -143,10 +129,6 @@ interface UpdatePostPayload
 interface DbResult<T>   // { data: T | null, error: { message: string } | null }
 interface DbDriver      // Contrato que implementan ambos drivers
 ```
-
-El web (`web/src/lib/api.ts`) define sus propios tipos alineados:
-- `PostSummary` — para `getPosts()` (lista)
-- `Post extends PostSummary` — para `getPost(slug)` (detalle)
 
 ---
 
@@ -170,102 +152,109 @@ CREATE TABLE posts (
 );
 ```
 
-**Row Level Security activado:**
-- Lectura pública solo de posts con `published = true`
-- Escritura solo con `service_role` key (bypasea RLS automáticamente)
+**Row Level Security:** lectura pública de `published = true`, escritura solo con `service_role`.
 
-**Posts actuales en BD:**
+**Posts actuales en producción:**
 - `ten-hours-with-openclaw` — publicado el 2026-03-01
-- `mi-primer-post-de-prueba`
-- `una-semana-con-claude-code`
 
 ---
 
 ## Sistema de drivers (dev vs prod)
-
-La API tiene una capa de abstracción que permite cambiar de base de datos con una sola variable:
 
 ```env
 DB_DRIVER=sqlite    # desarrollo local → usa lowdb (JSON file)
 DB_DRIVER=supabase  # producción → usa Supabase PostgreSQL
 ```
 
-**Driver SQLite (dev):** usa `lowdb` que guarda los datos en `dev.db.json`. Sin dependencias nativas, cero configuración, funciona en cualquier máquina sin instalar nada.
-
-> **Nota:** `better-sqlite3` fue descartado porque requiere compilar binarios nativos y Windows no tiene Visual Studio instalado.
-
-Ambos drivers implementan la interfaz `DbDriver`:
 ```ts
-db.getPosts()                    // Promise<DbResult<PostSummary[]>>
-db.getPost(slug)                 // Promise<DbResult<Post>>
-db.createPost(payload)           // Promise<DbResult<Post>>
-db.updatePost(slug, updates)     // Promise<DbResult<Post>>
-db.deletePost(slug)              // Promise<{ error: ... | null }>
+db.getPosts()            // Promise<DbResult<PostSummary[]>>
+db.getPost(slug)         // Promise<DbResult<Post>>
+db.createPost(payload)   // Promise<DbResult<Post>>
+db.updatePost(slug, ...) // Promise<DbResult<Post>>
+db.deletePost(slug)      // Promise<{ error: ... | null }>
 ```
 
 ---
 
-## Diseño visual
+## Arquitectura del frontend — Rendering dinámico (CSR)
 
-Tema oscuro minimalista con estética de terminal.
+La web usa Astro en modo `output: 'static'` (GitHub Pages no soporta SSR), pero los datos se
+cargan en el **browser en tiempo de request**, no en el build. Esto permite que agregar o borrar
+posts en la BD se refleje al refrescar sin necesitar un nuevo deploy.
 
-**Paleta de colores:**
+### Cómo funciona
+
+| Página | Estrategia | Detalle |
+|---|---|---|
+| `index.astro` | Client-side fetch | `<script>` llama a `GET /api/posts` en el browser |
+| `404.astro` | Catch-all + CSR | GitHub Pages sirve `404.html` para rutas sin archivo. El script lee el slug de la URL y llama a `GET /api/posts/:slug` |
+| `[slug].astro` | `getStaticPaths: []` | Devuelve array vacío → no genera HTML estático → todo cae al `404.html` |
+
+### Flujo de navegación a un post
+
+```
+Usuario → /dao.log/posts/ten-hours-with-openclaw
+        ↓
+GitHub Pages: no encuentra archivo → sirve 404.html
+        ↓
+404.astro detecta /posts/{slug} en window.location.pathname
+        ↓
+fetch(API_URL + /api/posts/ten-hours-with-openclaw)
+        ↓
+marked() parsea el markdown → innerHTML
+        ↓
+Post renderizado
+```
+
+---
+
+## Diseño visual — Tailwind CSS v4
+
+### Configuración (CSS-first, sin `tailwind.config.ts`)
+
+```
+astro.config.mjs → @tailwindcss/vite (Vite plugin)
+src/styles/global.css → @import "tailwindcss" + @plugin "@tailwindcss/typography"
+```
+
+### Arquitectura de temas
+
 ```css
---bg:      #0d0d0d   /* negro casi puro */
---surface: #141414   /* superficie de cards/code */
---border:  #222      /* bordes sutiles */
---text:    #c8c8c0   /* texto principal */
---muted:   #555      /* texto secundario */
---accent:  #c8a96e   /* dorado — títulos, links activos */
---accent2: #6e9ecb   /* azul — links, tags */
+:root  { --bg: #fafafa; ... }     /* tema claro  */
+.dark  { --bg: #0d0d0d; ... }     /* tema oscuro */
+
+@theme inline {
+  --color-bg: var(--bg);          /* token Tailwind referencia la variable */
+}
+
+/* bg-bg, text-text, border-border → cambian automáticamente con .dark */
 ```
 
-**Tipografía:**
-- UI / código: `JetBrains Mono` (Google Fonts)
-- Contenido: `Noto Serif` (Google Fonts)
+Toggle JS → `document.documentElement.classList.toggle('dark')`
+Persistencia → `localStorage.setItem('theme', ...)`
+Default → `prefers-color-scheme` del sistema operativo
 
-**Elementos de identidad:**
-- `> ` antes del nombre del site (prompt de terminal)
-- `道` en el footer
-- Tags con borde azul en estilo badge
-- Bloques de código con borde izquierdo dorado
-- Scrollbar personalizado oscuro
+### Paleta de colores
 
----
+| Token | Claro | Oscuro |
+|---|---|---|
+| `--bg` | `#fafafa` | `#0d0d0d` |
+| `--surface` | `#f2f2f2` | `#141414` |
+| `--border` | `#e4e4e0` | `#222` |
+| `--text` | `#28272a` | `#c8c8c0` |
+| `--muted` | `#9a9080` | `#555` |
+| `--accent` | `#a0713a` | `#c8a96e` |
+| `--accent2` | `#3d6e9a` | `#6e9ecb` |
 
-## Autenticación SSH para GitHub
+### Tipografía de posts
 
-Se generó un par de llaves SSH dedicadas al repo:
+`@tailwindcss/typography` → `class="prose dark:prose-invert"` en el contenedor del contenido.
+Estilos de `pre`, `code`, `blockquote` y `a` sobreescritos en `global.css` con CSS variables para que respondan al tema automáticamente.
 
-- **Archivo privado:** `C:\Users\KING ROYALE\.ssh\dao-log`
-- **Archivo público:** `C:\Users\KING ROYALE\.ssh\dao-log.pub`
-- **Algoritmo:** Ed25519
-- **Alias en `~/.ssh/config`:** `github-dao-log`
+### Toggle día/noche
 
-El remote del repo usa el alias:
-```
-git@github-dao-log:angelog05/dao.log.git
-```
-
----
-
-## GitHub Actions — Deploy automático
-
-Archivo: `.github/workflows/deploy.yml`
-
-**Trigger:** push a `main`
-
-**Flujo:**
-1. Checkout del código
-2. Setup Node.js 20
-3. `npm install` en `packages/web`
-4. `npm run build` → genera `packages/web/dist/` (la API debe estar online en este paso)
-5. Upload del artifact de Pages
-6. Deploy a GitHub Pages
-
-**Secret requerido:** `PUBLIC_API_URL` → URL pública de la API en producción
-
-**Estado actual:** Workflow configurado. GitHub Pages y el secret aún no están activados.
+- Botón luna/sol (SVG inline) en el header, arriba a la derecha
+- Script `is:inline` en `<head>` aplica el tema antes del primer render (sin flash)
 
 ---
 
@@ -274,7 +263,6 @@ Archivo: `.github/workflows/deploy.yml`
 ### packages/api/.env
 ```env
 DB_DRIVER=supabase
-SQLITE_PATH=./dev.db.json
 SUPABASE_URL=https://mmtqjqxtqbuuelwpubbr.supabase.co
 SUPABASE_SERVICE_KEY=<service_role_key>
 API_SECRET=dev-secret-123
@@ -286,30 +274,49 @@ PORT=3001
 PUBLIC_API_URL=http://localhost:3001
 ```
 
+### GitHub Actions secrets
+```
+PUBLIC_API_URL = https://dao-logapi-production.up.railway.app
+```
+
+---
+
+## Deploy
+
+### API — Railway
+- Root directory: `packages/api`
+- Build: `npm install && npm run build` (via `railway.toml`)
+- Start: `node dist/index.js`
+- Health check: `/health`
+- URL pública: `https://dao-logapi-production.up.railway.app`
+
+### Web — GitHub Pages
+- Trigger: push a `main`
+- Build: `npm install` (root) → `npm run build:web` → `packages/web/dist/`
+- URL pública: `https://angelog05.github.io/dao.log`
+
+---
+
+## Autenticación SSH para GitHub
+
+- **Llave:** `C:\Users\KING ROYALE\.ssh\dao-log` (Ed25519)
+- **Alias:** `github-dao-log` en `~/.ssh/config`
+- **Remote:** `git@github-dao-log:angelog05/dao.log.git`
+
 ---
 
 ## Cómo correr el proyecto en local
 
-### API (dev con hot reload)
+### API
 ```cmd
 cd packages\api
-npm run dev
-REM → tsx watch src/index.ts → http://localhost:3001
+npm run dev    → tsx watch src/index.ts → http://localhost:3001
 ```
 
-### API (producción compilada)
-```cmd
-cd packages\api
-npm run build
-npm run start
-REM → node dist/index.js → http://localhost:3001
-```
-
-### Web (modo dev)
+### Web
 ```cmd
 cd packages\web
-npm run dev
-REM → http://localhost:4321/dao.log
+npm run dev    → http://localhost:4321/dao.log
 ```
 
 ### Test rápido de la API
@@ -326,52 +333,6 @@ curl -X POST http://localhost:3001/api/posts ^
 
 ---
 
-## Plan de publicación
-
-### 1 — Verificar datos en Supabase
-Confirmar que el schema y los posts están en la instancia online antes del deploy.
-
-### 2 — Deploy de la API (Railway recomendado)
-```
-1. railway.app → New Project → Deploy from GitHub repo
-2. Seleccionar packages/api como root directory
-3. Configurar variables de entorno:
-   DB_DRIVER=supabase
-   SUPABASE_URL=https://mmtqjqxtqbuuelwpubbr.supabase.co
-   SUPABASE_SERVICE_KEY=<key>
-   API_SECRET=<secret-seguro>
-   PORT=3001
-4. Railway genera URL pública → ej. https://dao-log-api.up.railway.app
-```
-
-### 3 — Activar GitHub Pages
-```
-github.com/angelog05/dao.log → Settings → Pages → Source: GitHub Actions
-```
-
-### 4 — Agregar secret en GitHub Actions
-```
-Settings → Secrets and variables → Actions → New repository secret
-Nombre: PUBLIC_API_URL
-Valor:  https://dao-log-api.up.railway.app
-```
-
-### 5 — Merge PR y push a main
-```
-Mergear feat/api-typescript → main
-El deploy.yml se dispara automáticamente
-Astro buildea con la API real → sube a GitHub Pages
-```
-
-### URLs finales
-| Servicio | URL |
-|---|---|
-| Web | https://angelog05.github.io/dao.log |
-| API | https://dao-log-api.up.railway.app |
-| DB  | https://mmtqjqxtqbuuelwpubbr.supabase.co |
-
----
-
 ## Mejoras pendientes
 
 ### API (`packages/api`)
@@ -384,32 +345,30 @@ Astro buildea con la API real → sube a GitHub Pages
 | Filtro por tag `GET /api/posts?tag=x` | Media | Útil para el web |
 | Tests con `vitest` | Media | Cero cobertura actualmente |
 | Headers de seguridad (`helmet`) | Baja | CORS ya configurado |
-| OpenClaw/Telegram integration | Futura | Publicar posts desde Telegram |
 
 ### Web (`packages/web`)
 
 | Tarea | Prioridad | Notas |
 |---|---|---|
-| Página 404 personalizada | Alta | Redirige a `/404` que no existe |
 | Syntax highlighting (Shiki) | Media | Astro lo incluye nativamente |
 | Tiempo de lectura estimado | Baja | Calcular desde `content` |
 | Sitemap + RSS feed | Baja | Astro tiene plugins para ambos |
 | OpenGraph / meta tags | Baja | `Base.astro` ya tiene `description` |
-| Componente `PostCard` | Baja | Extraer del `index.astro` |
 | Filtrado por tags | Futura | Requiere mejora en la API también |
 
 ---
 
-## Historial de commits
+## Historial de commits relevantes
 
 ```
+389b4ee  fix(web): cleaner light theme + proper code block styling
+372339b  feat(web): migrate to Tailwind CSS v4 + day/night theme toggle
+ed346e5  feat(web): switch post list and post pages to client-side rendering
+fe4e73f  fix(ci): fix npm cache path for monorepo in GitHub Actions
 aa22be0  feat(web): add env types and align Post interfaces with API
 e96e4d9  feat(api): migrate to TypeScript
 cca8b07  fix: improve error handling and logging in server setup
 c578f5e  feat(api): add Morgan HTTP logging and business event logger
-4ec0a77  docs: add HTTP request examples for the API
-d1d051f  docs: add progress.md with full project context
-0316383  fix: strip duplicate h1 and fix base URL slashes
 3b205f2  feat: initial monorepo — API + Astro web + GitHub Actions
 ```
 
@@ -419,13 +378,17 @@ d1d051f  docs: add progress.md with full project context
 
 | Bug | Causa | Fix |
 |-----|-------|-----|
-| URL rota al clickear post | `BASE_URL` termina sin `/`, el link concatenaba sin separador | Agregado `/` explícito: `` `${base}/posts/${slug}` `` |
-| Título duplicado en post | El `# heading` del markdown se renderizaba además del `<h1>` del layout | Strip del primer `# h1` del markdown antes de parsear |
-| `better-sqlite3` no instala | Requiere compilar con Visual Studio (no instalado en Windows) | Reemplazado por `lowdb` (JSON file, puro JS) |
-| Token de GitHub revocado | GitHub detecta tokens en texto de chats y los revoca automáticamente | Migración a SSH con llave dedicada por repo |
-| `req.params.slug` tipo incorrecto | `@types/express` v5 lo tipaba como `string \| string[]` | Tipado explícito con `Request<{ slug: string }>` |
-| Paths de `types.ts` incorrectos | Rutas relativas mal calculadas tras crear el archivo en `src/` | Corregidos a `../types.js` y `../../types.js` según profundidad |
+| URL rota al clickear post | `BASE_URL` sin `/` separador | `` `${base}/posts/${slug}` `` con `/` explícito |
+| Título duplicado en post | `# h1` del markdown + `<h1>` del layout | Strip del primer heading antes de parsear |
+| `better-sqlite3` no instala | Requiere compilar con Visual Studio | Reemplazado por `lowdb` (JSON, puro JS) |
+| Token de GitHub revocado | GitHub detecta tokens en chats y los revoca | Migración a SSH con llave dedicada |
+| `req.params.slug` tipo incorrecto | `@types/express` v5 tipaba como `string \| string[]` | `Request<{ slug: string }>` explícito |
+| Paths de `types.ts` incorrectos | Rutas relativas mal calculadas | Corregidos a `../types.js` y `../../types.js` |
+| Railway buildea el web en vez de la API | Railway detecta `build:web` desde la raíz | `railway.toml` en `packages/api` + Root Directory en dashboard |
+| GitHub Actions falla con npm cache | `cache-dependency-path: packages/web/package-lock.json` no existe | Cambiado a `package-lock.json` de la raíz |
+| Posts borrados siguen en la web | Astro generaba HTML estático en el build | Migración a CSR: fetch en el browser, `404.astro` como catch-all |
+| Code block con fondo oscuro en light mode | `--surface` del tema oscuro no cambiaba | Overrides de `.prose pre/code` en `global.css` con CSS variables |
 
 ---
 
-*Última actualización: 2026-03-07*
+*Última actualización: 2026-03-09*
