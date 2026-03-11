@@ -406,7 +406,7 @@ curl -X POST http://localhost:3001/api/posts ^
 ## Historial de commits relevantes
 
 ```
-(pending)  feat(web): add Consola theme + functional theme selector
+3277976  feat(web): add Consola theme + functional theme selector
 be3e800  feat(web): add avatar + dropdown menu with shadcn/ui (React)
 389b4ee  fix(web): cleaner light theme + proper code block styling
 372339b  feat(web): migrate to Tailwind CSS v4 + day/night theme toggle
