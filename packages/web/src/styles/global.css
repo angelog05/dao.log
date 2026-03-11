@@ -107,6 +107,77 @@ body {
   @apply text-muted text-[0.92rem] leading-relaxed;
 }
 
+/* ── Consola theme — CSS variables ──────────────────────────────── */
+
+.theme-consola {
+  --bg:      #f0faf2;
+  --surface: #e2f5e6;
+  --border:  #b8ddc0;
+  --text:    #0a3d15;
+  --muted:   #3a6e48;
+  --accent:  #1a5e28;
+  --accent2: #1a5e28;
+
+  --background:         var(--bg);
+  --foreground:         var(--text);
+  --popover:            var(--surface);
+  --popover-foreground: var(--text);
+  --muted-foreground:   var(--muted);
+  --accent-foreground:  var(--bg);
+}
+
+.theme-consola.dark {
+  --bg:      #020a02;
+  --surface: #071507;
+  --border:  #0d3b0d;
+  --text:    #4afe8a;
+  --muted:   #205c20;
+  --accent:  #4afe8a;
+  --accent2: #4afe8a;
+}
+
+/* ── Consola theme — UI overrides ───────────────────────────────── */
+
+/* Monospace everywhere */
+.theme-consola body { font-family: 'JetBrains Mono', monospace; }
+
+/* Post titles: monospace + uppercase */
+.theme-consola .post-title a,
+.theme-consola #post-title,
+.theme-consola .font-serif { font-family: 'JetBrains Mono', monospace; }
+
+.theme-consola .post-title a,
+.theme-consola #post-title { text-transform: uppercase; }
+
+/* Nav links: "$ cd ~/" prefix via CSS */
+.theme-consola nav a::before {
+  content: "$ cd ~/";
+  color: var(--muted);
+}
+
+/* Post tags: use accent color in Consola */
+.theme-consola .post-tag {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Prose body + headings in Consola */
+.theme-consola .prose { color: var(--text); font-family: 'JetBrains Mono', monospace; }
+.theme-consola .prose h1,
+.theme-consola .prose h2,
+.theme-consola .prose h3,
+.theme-consola .prose h4 { color: var(--text); font-family: 'JetBrains Mono', monospace; }
+
+/* consola-prompt: hidden in Seb, shown in Consola */
+.consola-prompt { display: none; }
+.theme-consola .consola-prompt {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
 /* ── Prose (post content) overrides ─────────────────────────────── */
 /* Using CSS variables → both light and dark handled automatically   */
 

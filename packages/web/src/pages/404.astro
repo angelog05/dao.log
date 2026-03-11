@@ -8,6 +8,8 @@ import Base from '../layouts/Base.astro'
     loading...
   </div>
 
+  <div id="consola-post-prompt" class="consola-prompt pt-8"></div>
+
   <article id="post-view" class="hidden">
     <header class="py-12 border-b border-border mb-10">
       <div id="post-meta"
@@ -65,6 +67,8 @@ import Base from '../layouts/Base.astro'
       const post = await res.json()
 
       document.title = `${post.title} — dao.log`
+
+      document.getElementById('consola-post-prompt')!.textContent = `$ cat /posts/${slug}.md`
 
       document.getElementById('post-meta')!.innerHTML = `
         <span>${formatDate(post.published_at)}</span>

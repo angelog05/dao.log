@@ -264,6 +264,24 @@ Estilos de `pre`, `code`, `blockquote` y `a` sobreescritos en `global.css` con C
 - Botón luna/sol (SVG inline) en el header, arriba a la derecha
 - Script `is:inline` en `<head>` aplica el tema antes del primer render (sin flash)
 
+### Consola theme
+
+Tema terminal activado desde el dropdown del avatar (→ "consola"). Persiste en `localStorage.themeName`. Compatible con el toggle día/noche:
+
+| Combinación | HTML classes | Look |
+|---|---|---|
+| Seb light | — | cálido, serif, amber |
+| Seb dark | `.dark` | oscuro cálido, amber dorado |
+| Consola light | `.theme-consola` | verde oscuro sobre crema |
+| Consola dark | `.theme-consola.dark` | verde `#4afe8a` sobre negro |
+
+Cambios de Consola vs Seb:
+- Fuente: monospace en todo el body (JetBrains Mono)
+- Títulos: `text-transform: uppercase` + monospace
+- Nav: `$ cd ~/home` prefix via CSS `::before`
+- Post items: `$ cat /posts/slug.md` prefix visible (`.consola-prompt`)
+- Prose: color + fuente monospace via CSS vars
+
 ### shadcn/ui — Avatar + DropdownMenu
 
 - **React** integrado en Astro vía `@astrojs/react`, con `client:load` para hidratación client-side
@@ -388,6 +406,7 @@ curl -X POST http://localhost:3001/api/posts ^
 ## Historial de commits relevantes
 
 ```
+(pending)  feat(web): add Consola theme + functional theme selector
 be3e800  feat(web): add avatar + dropdown menu with shadcn/ui (React)
 389b4ee  fix(web): cleaner light theme + proper code block styling
 372339b  feat(web): migrate to Tailwind CSS v4 + day/night theme toggle
@@ -419,4 +438,4 @@ c578f5e  feat(api): add Morgan HTTP logging and business event logger
 
 ---
 
-*Última actualización: 2026-03-09 — avatar + shadcn/ui dropdown*
+*Última actualización: 2026-03-10 — Consola theme + theme selector funcional*
