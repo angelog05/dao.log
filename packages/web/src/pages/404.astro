@@ -17,6 +17,7 @@ import Base from '../layouts/Base.astro'
       </div>
       <h1 id="post-title"
           class="font-serif text-[1.85rem] font-bold leading-tight text-text mt-3">
+        <span id="post-title-text"></span><span class="consola-cursor">█</span>
       </h1>
     </header>
     <div id="post-content" class="pb-16 prose dark:prose-invert max-w-none">
@@ -74,7 +75,7 @@ import Base from '../layouts/Base.astro'
         <span>${formatDate(post.published_at)}</span>
         ${post.tags.map((tag: string) => `<span class="post-tag">${tag}</span>`).join('')}
       `
-      document.getElementById('post-title')!.textContent = post.title
+      document.getElementById('post-title-text')!.textContent = post.title
 
       const rawContent = post.content.replace(/^#\s+.+\n?/, '')
       document.getElementById('post-content')!.innerHTML = marked(rawContent) as string
