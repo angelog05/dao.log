@@ -438,4 +438,4 @@ c578f5e  feat(api): add Morgan HTTP logging and business event logger
 
 ---
 
-*Última actualización: 2026-03-10 — Consola theme + theme selector funcional*
+*Última actualización: 10/03/2026 18:45:00 — Consola dark palette refinada + cursor parpadeante en título del post*
