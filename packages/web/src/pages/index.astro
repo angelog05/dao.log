@@ -7,29 +7,52 @@ const baseUrl = import.meta.env.BASE_URL
 
 <Base>
   <ul id="post-list" class="py-12 list-none">
-    <li class="py-12 font-mono text-[0.85rem] text-muted">
+    <li id="loading-item" class="py-12 font-mono text-[0.85rem] text-muted">
       loading...
     </li>
   </ul>
 </Base>
 
 <script define:vars={{ apiUrl, baseUrl }}>
+  import { translations } from '@/i18n/translations'
+
+  function getLang() {
+    return (localStorage.getItem('lang') || 'en')
+  }
+
+  function i(key) {
+    const lang = getLang()
+    const keys = key.split('.')
+    let value  = translations[lang]
+    for (const k of keys) value = value?.[k]
+    return value ?? key
+  }
+
   function formatDate(dateStr) {
     return new Date(dateStr).toISOString().split('T')[0]
   }
 
+  let cachedPosts = null
+
   async function loadPosts() {
-    const list = document.getElementById('post-list')
+    const list        = document.getElementById('post-list')
+    const loadingItem = document.getElementById('loading-item')
+
+    if (loadingItem) loadingItem.textContent = i('index.loading')
 
     try {
-      const res = await fetch(`${apiUrl}/api/posts`)
-      if (!res.ok) throw new Error('API error')
-      const posts = await res.json()
+      if (!cachedPosts) {
+        const res = await fetch(`${apiUrl}/api/posts`)
+        if (!res.ok) throw new Error('API error')
+        cachedPosts = await res.json()
+      }
+
+      const posts = cachedPosts
 
       if (posts.length === 0) {
         list.innerHTML = `
           <li class="py-12 font-mono text-[0.85rem] text-muted">
-            no posts yet. the path begins.
+            ${i('index.empty')}
           </li>`
         return
       }
@@ -48,13 +71,17 @@ const baseUrl = import.meta.env.BASE_URL
         </li>
       `).join('')
 
-    } catch (err) {
+    } catch {
       list.innerHTML = `
         <li class="py-12 font-mono text-[0.85rem] text-muted">
-          error loading posts.
+          ${i('index.error')}
         </li>`
     }
   }
 
   loadPosts()
+
+  window.addEventListener('langchange', () => {
+    if (cachedPosts !== null) loadPosts()
+  })
 </script>

@@ -25,7 +25,7 @@ import Base from '../layouts/Base.astro'
   </article>
 
   <div id="not-found" class="hidden py-12">
-    <p class="font-mono text-[0.85rem] text-muted">404 — page not found.</p>
+    <p id="not-found-msg" class="font-mono text-[0.85rem] text-muted">404 — page not found.</p>
     <p class="mt-4 font-mono text-[0.8rem]">
       <a id="home-link" href="/" class="text-accent2">← home</a>
     </p>
@@ -35,12 +35,38 @@ import Base from '../layouts/Base.astro'
 
 <script>
   import { marked } from 'marked'
+  import { translations } from '@/i18n/translations'
 
   const API_URL  = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001'
   const BASE_URL = import.meta.env.BASE_URL
 
+  function getLang() {
+    return (localStorage.getItem('lang') || 'en') as keyof typeof translations
+  }
+
+  function i(key: string): string {
+    const lang = getLang()
+    const keys = key.split('.')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let value: any = translations[lang]
+    for (const k of keys) value = value?.[k]
+    return value ?? key
+  }
+
   function formatDate(dateStr: string): string {
     return new Date(dateStr).toISOString().split('T')[0]
+  }
+
+  function applyLang() {
+    const loading     = document.getElementById('loading')
+    const notFoundMsg = document.getElementById('not-found-msg')
+    const homeLink    = document.getElementById('home-link') as HTMLAnchorElement
+
+    if (loading && loading.style.display !== 'none') {
+      loading.textContent = i('post.loading')
+    }
+    if (notFoundMsg) notFoundMsg.textContent = i('post.notFound')
+    if (homeLink)    homeLink.textContent    = i('post.backHome')
   }
 
   async function init() {
@@ -49,6 +75,7 @@ import Base from '../layouts/Base.astro'
     const notFound = document.getElementById('not-found')!
     const homeLink = document.getElementById('home-link') as HTMLAnchorElement
 
+    loading.textContent = i('post.loading')
     homeLink.href = BASE_URL || '/'
 
     const path  = window.location.pathname
@@ -57,6 +84,7 @@ import Base from '../layouts/Base.astro'
     if (!match) {
       loading.style.display = 'none'
       notFound.classList.remove('hidden')
+      applyLang()
       return
     }
 
@@ -86,8 +114,11 @@ import Base from '../layouts/Base.astro'
     } catch {
       loading.style.display = 'none'
       notFound.classList.remove('hidden')
+      applyLang()
     }
   }
 
   init()
+
+  window.addEventListener('langchange', applyLang)
 </script>

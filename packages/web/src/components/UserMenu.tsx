@@ -9,15 +9,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import type { Lang } from '@/i18n/translations'
+import { t } from '@/i18n/translations'
 
 type ThemeName = 'seb' | 'consola'
 
 export default function UserMenu() {
   const [theme, setTheme] = useState<ThemeName>('seb')
+  const [lang, setLang]   = useState<Lang>('en')
 
   useEffect(() => {
-    const saved = (localStorage.getItem('themeName') as ThemeName) || 'seb'
-    setTheme(saved)
+    const savedTheme = (localStorage.getItem('themeName') as ThemeName) || 'seb'
+    const savedLang  = (localStorage.getItem('lang') as Lang) || 'en'
+    setTheme(savedTheme)
+    setLang(savedLang)
+
+    const onLangChange = (e: Event) => {
+      setLang((e as CustomEvent<{ lang: Lang }>).detail.lang)
+    }
+    window.addEventListener('langchange', onLangChange)
+    return () => window.removeEventListener('langchange', onLangChange)
   }, [])
 
   function selectTheme(name: ThemeName) {
@@ -45,7 +56,7 @@ export default function UserMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="font-mono text-[0.78rem] min-w-[8rem]">
         <DropdownMenuLabel className="text-[0.65rem] uppercase tracking-widest opacity-60 pb-1">
-          themes
+          {t(lang, 'menu.themes')}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem

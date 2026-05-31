@@ -438,4 +438,47 @@ c578f5e  feat(api): add Morgan HTTP logging and business event logger
 
 ---
 
-*Última actualización: 10/03/2026 18:45:00 — Consola dark palette refinada + cursor parpadeante en título del post*
+---
+
+## Sistema i18n (EN/ES)
+
+Implementado en `packages/web/src/i18n/translations.ts`. Arquitectura:
+
+```
+localStorage.lang  →  'en' | 'es'
+                ↓
+data-lang attr en <html>  (aplicado antes del primer render via is:inline)
+                ↓
+CustomEvent 'langchange' dispatched por LanguageToggle.tsx
+                ↓
+Base.astro script  →  [data-i18n] elements (nav, tagline)
+UserMenu.tsx       →  useState + window.addEventListener('langchange')
+index.astro script →  re-render lista de posts con strings traducidos
+404.astro script   →  applyLang() on init + on langchange
+about.astro script →  innerHTML swap completo
+```
+
+### Archivos del sistema i18n
+
+```
+packages/web/src/
+├── i18n/
+│   └── translations.ts       ← Todas las strings EN + ES (type-safe con satisfies)
+└── components/
+    └── LanguageToggle.tsx    ← Botón React "ES/EN" en el header
+```
+
+### Strings traducidas
+
+| Sección | Keys |
+|---|---|
+| nav | `home` / `about` |
+| header | `tagline` |
+| menu | `themes` |
+| index | `loading`, `error`, `empty` |
+| post | `loading`, `notFound`, `backHome` |
+| about | `title`, `p1`, `p2`, `p3` |
+
+---
+
+*Última actualización: 30/05/2026 21:15:00 — Sistema i18n EN/ES: LanguageToggle + translations.ts + traducción de todas las páginas*

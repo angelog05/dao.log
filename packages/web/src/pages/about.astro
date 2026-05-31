@@ -8,17 +8,17 @@ import Base from '../layouts/Base.astro'
               prose-a:text-accent2 prose-strong:text-text
               prose-hr:border-border">
 
-    <h2>About dao.log</h2>
-    <p>
+    <h2 id="about-title">About dao.log</h2>
+    <p id="about-p1">
       This is where I document how I use AI in my work and daily life.
       Not the polished version — the real one. The debugging sessions,
       the rabbit holes, the things that actually worked.
     </p>
-    <p>
+    <p id="about-p2">
       The name comes from <strong>道</strong> (Dào) — the path.
       Not a destination, not a framework. Just the road you walk, day by day.
     </p>
-    <p>
+    <p id="about-p3">
       I'm a developer. I work with AI not as a novelty but as a daily tool.
       These are my field notes.
     </p>
@@ -27,3 +27,25 @@ import Base from '../layouts/Base.astro'
 
   </div>
 </Base>
+
+<script>
+  import { translations } from '@/i18n/translations'
+
+  function getLang() {
+    return (localStorage.getItem('lang') || 'en') as keyof typeof translations
+  }
+
+  function applyLang() {
+    const lang  = getLang()
+    const about = translations[lang].about
+
+    document.getElementById('about-title')!.textContent       = about.title
+    document.getElementById('about-p1')!.textContent          = about.p1
+    document.getElementById('about-p2')!.innerHTML            = about.p2
+    document.getElementById('about-p3')!.textContent          = about.p3
+  }
+
+  applyLang()
+
+  window.addEventListener('langchange', applyLang)
+</script>
