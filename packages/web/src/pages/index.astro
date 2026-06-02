@@ -69,7 +69,11 @@ const baseUrl = import.meta.env.BASE_URL
         return
       }
 
-      list.innerHTML = posts.map((post: any) => `
+      const lang = getLang()
+      list.innerHTML = posts.map((post: any) => {
+        const title   = (lang === 'es' && post.title_es)   ? post.title_es   : post.title
+        const excerpt = (lang === 'es' && post.excerpt_es) ? post.excerpt_es : post.excerpt
+        return `
         <li class="post-item">
           <div class="consola-prompt">$ cat /posts/${post.slug}.md</div>
           <div class="post-meta">
@@ -77,11 +81,11 @@ const baseUrl = import.meta.env.BASE_URL
             ${post.tags.map((tag: string) => `<span class="post-tag">${tag}</span>`).join('')}
           </div>
           <div class="post-title">
-            <a href="${baseUrl}/posts/${post.slug}">${post.title}</a>
+            <a href="${baseUrl}/posts/${post.slug}">${title}</a>
           </div>
-          ${post.excerpt ? `<p class="post-excerpt">${post.excerpt}</p>` : ''}
-        </li>
-      `).join('')
+          ${excerpt ? `<p class="post-excerpt">${excerpt}</p>` : ''}
+        </li>`
+      }).join('')
 
     } catch {
       list.innerHTML = `

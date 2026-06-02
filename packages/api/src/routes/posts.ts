@@ -34,13 +34,16 @@ router.get('/:slug', async (req: Request<{ slug: string }>, res: Response) => {
 // ─── POST /api/posts ──────────────────────────────
 // Body: { title, content, excerpt?, tags?, date?, published? }
 router.post('/', requireAuth, async (req: Request, res: Response) => {
-  const { title, content, excerpt, tags, date, published } = req.body as {
+  const { title, content, excerpt, tags, date, published, title_es, excerpt_es, content_es } = req.body as {
     title?: string
     content?: string
     excerpt?: string
     tags?: string[]
     date?: string
     published?: boolean
+    title_es?: string
+    excerpt_es?: string
+    content_es?: string
   }
 
   if (!title || !content) {
@@ -61,6 +64,9 @@ router.post('/', requireAuth, async (req: Request, res: Response) => {
     tags: tags ?? [],
     published: published ?? true,
     published_at,
+    ...(title_es   && { title_es }),
+    ...(excerpt_es && { excerpt_es }),
+    ...(content_es && { content_es }),
   })
 
   if (error) {

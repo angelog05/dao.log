@@ -69,6 +69,24 @@ import Base from '../layouts/Base.astro'
     if (homeLink)    homeLink.textContent    = i('post.backHome')
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let cachedPost: any = null
+
+  function renderPost() {
+    if (!cachedPost) return
+    const lang = getLang()
+    const post = cachedPost
+
+    const title   = (lang === 'es' && post.title_es)   ? post.title_es   : post.title
+    const content = (lang === 'es' && post.content_es) ? post.content_es : post.content
+
+    document.title = `${title} — dao.log`
+    document.getElementById('post-title-text')!.textContent = title
+
+    const rawContent = content.replace(/^#\s+.+\n?/, '')
+    document.getElementById('post-content')!.innerHTML = marked(rawContent) as string
+  }
+
   async function init() {
     const loading  = document.getElementById('loading')!
     const postView = document.getElementById('post-view')!
@@ -93,20 +111,15 @@ import Base from '../layouts/Base.astro'
     try {
       const res = await fetch(`${API_URL}/api/posts/${slug}`)
       if (!res.ok) throw new Error('not found')
-      const post = await res.json()
-
-      document.title = `${post.title} — dao.log`
+      cachedPost = await res.json()
 
       document.getElementById('consola-post-prompt')!.textContent = `$ cat /posts/${slug}.md`
-
       document.getElementById('post-meta')!.innerHTML = `
-        <span>${formatDate(post.published_at)}</span>
-        ${post.tags.map((tag: string) => `<span class="post-tag">${tag}</span>`).join('')}
+        <span>${formatDate(cachedPost.published_at)}</span>
+        ${cachedPost.tags.map((tag: string) => `<span class="post-tag">${tag}</span>`).join('')}
       `
-      document.getElementById('post-title-text')!.textContent = post.title
 
-      const rawContent = post.content.replace(/^#\s+.+\n?/, '')
-      document.getElementById('post-content')!.innerHTML = marked(rawContent) as string
+      renderPost()
 
       loading.style.display = 'none'
       postView.classList.remove('hidden')
@@ -120,5 +133,8 @@ import Base from '../layouts/Base.astro'
 
   init()
 
-  window.addEventListener('langchange', applyLang)
+  window.addEventListener('langchange', () => {
+    applyLang()
+    renderPost()
+  })
 </script>

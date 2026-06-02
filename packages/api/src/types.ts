@@ -9,9 +9,13 @@ export interface Post {
   published_at: string
   created_at: string
   updated_at: string
+  // i18n — optional Spanish translations
+  title_es?:   string | null
+  excerpt_es?: string | null
+  content_es?: string | null
 }
 
-export type PostSummary = Omit<Post, 'content' | 'updated_at' | 'published'>
+export type PostSummary = Omit<Post, 'content' | 'content_es' | 'updated_at' | 'published'>
 
 export interface CreatePostPayload {
   title: string
@@ -21,6 +25,10 @@ export interface CreatePostPayload {
   tags?: string[]
   published?: boolean
   published_at?: string
+  // i18n
+  title_es?:   string
+  excerpt_es?: string
+  content_es?: string
 }
 
 export type UpdatePostPayload = Partial<Omit<Post, 'id' | 'created_at'>>

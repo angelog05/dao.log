@@ -11,7 +11,7 @@ const db: DbDriver = {
   async getPosts(): Promise<DbResult<PostSummary[]>> {
     const result = await supabase
       .from('posts')
-      .select('id, title, slug, excerpt, tags, published_at, created_at')
+      .select('id, title, slug, excerpt, tags, published_at, created_at, title_es, excerpt_es')
       .eq('published', true)
       .order('published_at', { ascending: false })
     return result as unknown as DbResult<PostSummary[]>
