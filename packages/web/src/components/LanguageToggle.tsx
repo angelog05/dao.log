@@ -21,9 +21,10 @@ export default function LanguageToggle() {
     <button
       onClick={toggle}
       aria-label="Toggle language"
+      title={`Switch to ${lang === 'en' ? 'Spanish' : 'English'}`}
       className="font-mono text-[0.72rem] tracking-widest text-muted transition-colors hover:text-text cursor-pointer px-1 py-2"
     >
-      {lang === 'en' ? 'ES' : 'EN'}
+      {lang.toUpperCase()}
     </button>
   )
 }
