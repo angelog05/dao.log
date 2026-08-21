@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react'
 import type { Lang } from '@/i18n/translations'
 
 export default function LanguageToggle() {
-  const [lang, setLang] = useState<Lang>('en')
+  const [lang, setLang] = useState<Lang>('es')
 
   useEffect(() => {
-    const saved = (localStorage.getItem('lang') as Lang) || 'en'
+    const saved = (localStorage.getItem('lang') as Lang) || 'es'
     setLang(saved)
   }, [])
 
