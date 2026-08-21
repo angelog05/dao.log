@@ -83,7 +83,15 @@ import Base from '../layouts/Base.astro'
     document.title = `${title} — dao.log`
     document.getElementById('post-title-text')!.textContent = title
 
-    const rawContent = content.replace(/^#\s+.+\n?/, '')
+    // Strip the first H1 (markdown) to avoid duplicating the layout's <h1>.
+    // The H1 may appear at the very start, OR after a leading cover image
+    // (`![alt](url)\n\n# Title\n...`). Match both cases explicitly.
+    let rawContent = content
+    const coverMatch = rawContent.match(/^!\[[^\]]*\]\([^)]+\)\s*\n+/)
+    if (coverMatch) rawContent = rawContent.slice(coverMatch[0].length)
+    const h1Match = rawContent.match(/^#\s+[^\n]+\n+/)
+    if (h1Match) rawContent = rawContent.slice(h1Match[0].length)
+
     document.getElementById('post-content')!.innerHTML = marked(rawContent) as string
   }
 
